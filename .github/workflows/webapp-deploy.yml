@@ -6,9 +6,9 @@ on:
         type: string
 
 env:
-  AZURE_WEBAPP_NAME: rob-actions-cd-demo
+  AZURE_WEBAPP_NAME: adp-github-actions-demo
   AZURE_WEBAPP_PACKAGE_PATH: '.'
-  NODE_VERSION: '12.x'
+  NODE_VERSION: '18.x'
 
 jobs:
   webapp-deploy:
@@ -18,12 +18,17 @@ jobs:
     environment:
       # Use the input to set the environment
       name: ${{ inputs.environment }}
-      url: "https://${{ env.AZURE_WEBAPP_NAME }}-${{ inputs.environment }}.azurewebsites.net/"
+      url: "https://${{ env.AZURE_WEBAPP_NAME }}-${{ inputs.environment }}-dse9hpctdwa9dec9.eastus2-01.azurewebsites.net/"
 
+ 
     steps:
+    - uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ env.NODE_VERSION }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
     - name: npm install
@@ -33,13 +38,13 @@ jobs:
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+       # publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
         package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
         slot-name: ${{ inputs.environment }}
     - name: Check the deployed service URL
       uses: jtalk/url-health-check-action@v1.2
       with:
-        url: https://${{ env.AZURE_WEBAPP_NAME }}-${{ inputs.environment }}.azurewebsites.net/|https://${{ env.AZURE_WEBAPP_NAME }}-${{ inputs.environment }}.azurewebsites.net/user/rob-derosa
+        url: https://${{ env.AZURE_WEBAPP_NAME }}-${{ inputs.environment }}-dse9hpctdwa9dec9.eastus2-01.azurewebsites.net/|https://${{ env.AZURE_WEBAPP_NAME }}-${{ inputs.environment }}.-dse9hpctdwa9dec9.eastus2-01.azurewebsites.net/user/rob-derosa
         follow-redirect: no
         max-attempts: 30
         retry-delay: 5s
